@@ -1,22 +1,31 @@
-import { useState } from "react";
-import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Background from "./components/Background";
 import Navbar from "./components/Navbar";
 import Calendar from "./components/Calendar";
 import DailyView from "./components/DailyView";
+import Pomodoro from "./components/Pomodoro";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <div>
-      <div>
-        <Navbar />
-      </div>
-      <div className="lg:flex">
-        <Calendar />
-        <DailyView />
-      </div>
-    </div>
+    <BrowserRouter>
+      <Background>
+        <div className="p-2 max-w-7xl mx-auto">
+          <Navbar />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div className="lg:flex gap-3 mt-3">
+                  <Calendar />
+                  <DailyView />
+                </div>
+              }
+            />
+            <Route path="/pomodoro" element={<Pomodoro />} />
+          </Routes>
+        </div>
+      </Background>
+    </BrowserRouter>
   );
 }
 

@@ -1,20 +1,39 @@
-import { CiSettings } from "react-icons/ci";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
-  return (
-    <div className="rounded-md p-3 bg-[#b3dfb755] shadow-md flex flex-row justify-between bg-transparent">
-      {/* <h1 className="flex text-2xl font-bold pl-1">Planr</h1> */}
-      <img
-        className="h-8 hover:scale-125 transition cursor-pointer"
-        src="/planr.svg"
-        alt="logo"
-      />
-      <h1 className="flex mt-1 text-lg font-semibold">Calendar</h1>
+  const location = useLocation();
 
-      <h2 className="font-semibold flex items-center pr-1 hover:scale-125 transition cursor-pointer">
-        <CiSettings size={36} />
-      </h2>
-    </div>
+  return (
+    <nav className="bg-white/70 backdrop-blur-md rounded-xl p-3 shadow-sm flex items-center justify-between">
+      <Link to="/" className="flex items-center gap-2 hover:scale-105 transition">
+        <img className="h-7" src="/planr.svg" alt="logo" />
+      </Link>
+
+      <div className="flex gap-1">
+        <Link
+          to="/"
+          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition ${
+            location.pathname === "/"
+              ? "bg-pink-100 text-pink-600"
+              : "text-gray-500 hover:bg-gray-100"
+          }`}
+        >
+          Calendar
+        </Link>
+        <Link
+          to="/pomodoro"
+          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition ${
+            location.pathname === "/pomodoro"
+              ? "bg-pink-100 text-pink-600"
+              : "text-gray-500 hover:bg-gray-100"
+          }`}
+        >
+          Pomodoro
+        </Link>
+      </div>
+
+      <div className="w-7" />
+    </nav>
   );
 };
 

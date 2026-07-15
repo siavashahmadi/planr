@@ -1,34 +1,103 @@
-import React, { useState } from "react";
-import Day from "./Day";
-import Month from "./Month";
+import MonthGrid from "./MonthGrid";
+import { useMonthTasks } from "../hooks/useMonthTasks";
+import { useTaskStore } from "../store/taskStore";
+
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
 
 const Calendar = () => {
-  const monthsDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  const [month, setMonth] = useState(12)
+  const {
+    selectedDate,
+    selectedYear,
+    selectedMonth,
+    refreshKey,
+    setSelectedDate,
+    setSelectedYear,
+    setSelectedMonth,
+  } = useTaskStore();
+
+  const { summaries, loading } = useMonthTasks(selectedYear, selectedMonth, refreshKey);
+
+  const handlePrevMonth = () => {
+    if (selectedMonth === 1) {
+      setSelectedMonth(12);
+      setSelectedYear(selectedYear - 1);
+    } else {
+      setSelectedMonth(selectedMonth - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (selectedMonth === 12) {
+      setSelectedMonth(1);
+      setSelectedYear(selectedYear + 1);
+    } else {
+      setSelectedMonth(selectedMonth + 1);
+    }
+  };
 
   return (
-    <div className="flex flex-col">
-      <div className="inline-block relative w-full mt-2">
-        <select className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline" value={month} onChange={e => setMonth(Number(e.target.value))}>
-          <option value={12} disabled>Choose a month</option>
-          <option value={0}>January</option>
-          <option value={1}>February</option>
-          <option value={2}>March</option>
-          <option value={3}>April</option>
-          <option value={4}>May</option>
-          <option value={5}>June</option>
-          <option value={6}>July</option>
-          <option value={7}>August</option>
-          <option value={8}>September</option>
-          <option value={9}>October</option>
-          <option value={10}>November</option>
-          <option value={11}>December</option>
-        </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+    <div className="flex-1 flex flex-col min-w-0">
+      {/* Month/Year Navigation */}
+      <div className="flex items-center justify-between bg-white/70 backdrop-blur-sm rounded-xl p-3">
+        <button
+          onClick={handlePrevMonth}
+          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-pink-50 transition text-gray-500 text-lg"
+        >
+          &#8249;
+        </button>
+
+        <div className="flex items-center gap-2">
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+            className="bg-transparent text-lg font-semibold text-gray-700 cursor-pointer focus:outline-none"
+          >
+            {MONTH_NAMES.map((name, i) => (
+              <option key={i} value={i + 1}>
+                {name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="bg-transparent text-lg font-semibold text-gray-700 cursor-pointer focus:outline-none"
+          >
+            {Array.from({ length: 11 }, (_, i) => selectedYear - 5 + i).map(
+              (y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              )
+            )}
+          </select>
         </div>
+
+        <button
+          onClick={handleNextMonth}
+          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-pink-50 transition text-gray-500 text-lg"
+        >
+          &#8250;
+        </button>
       </div>
-      <Month monthIndex={month} days={monthsDays[month]} />
+
+      {loading ? (
+        <div className="flex justify-center items-center h-48 text-gray-400">
+          Loading...
+        </div>
+      ) : (
+        <MonthGrid
+          year={selectedYear}
+          month={selectedMonth}
+          summaries={summaries}
+          selectedDate={selectedDate}
+          onSelectDate={setSelectedDate}
+        />
+      )}
     </div>
   );
 };
